@@ -1,63 +1,107 @@
-import express from "express";
+import ejs from "ejs";
 import fs from "fs";
+import http from "http";
 import path from "path";
+import querystring from "querystring";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
 const port = 3000;
 
-app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true }));
-
-let data = JSON.parse(fs.readFileSync("data.json", "utf8"));
+const getData = () => {
+  return JSON.parse(fs.readFileSync("data.json", "utf8"));
+};
 
 const saveData = (data) => {
   fs.writeFileSync("data.json", JSON.stringify(data, null, 2));
 };
 
-app.get("/", (req, res) => {
-  res.render(path.join(__dirname, "views", "index"), { users: data });
-});
-
-app.get("/add", (req, res) => {
-  res.render(path.join(__dirname, "views", "add"));
-});
-
-app.post("/add", (req, res) => {
-  const newUser = req.body;
-  newUser.isMarried = newUser.isMarried === "true";
-  data.push(newUser);
-  saveData(data);
-  res.redirect("/");
-});
-
-app.get("/edit/:id", (req, res) => {
-  const user = data[req.params.id];
-  res.render(path.join(__dirname, "views", "edit"), {
-    user,
-    id: req.params.id,
+const renderPage = (res, view, data = {}) => {
+  ejs.renderFile(path.join(__dirname, "views", view), data, {}, (err, str) => {
+    if (err) {
+      res.writeHead(500, { "Content-Type": "text/html" });
+      res.end("Error rendering page");
+      console.error(err);
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(str);
   });
+};
+
+const serveStaticFiles = (req, res) => {
+  const filePath = path.join(__dirname, "public", req.url);
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      res.writeHead(404, { "Content-Type": "text/html" });
+      res.end("File not found");
+      return;
+    }
+    const ext = path.extname(filePath);
+    let contentType = "text/plain";
+    if (ext === ".css") {
+      contentType = "text/css";
+    }
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(fs.readFileSync(filePath));
+  });
+};
+
+const server = http.createServer((req, res) => {
+  let data = getData();
+  if (req.url.endsWith(".css")) {
+    serveStaticFiles(req, res);
+    return;
+  }
+  if (req.method === "GET" && req.url === "/") {
+    renderPage(res, "index.ejs", { users: data });
+  } else if (req.method === "GET" && req.url === "/add") {
+    renderPage(res, "/add/index.ejs");
+  } else if (req.method === "POST" && req.url === "/add") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      const newUser = querystring.parse(body);
+      newUser.isMarried = newUser.isMarried === "true";
+      data.push(newUser);
+      saveData(data);
+      res.writeHead(302, { Location: "/" });
+      res.end();
+    });
+  } else if (req.method === "GET" && req.url.startsWith("/edit/")) {
+    const id = req.url.split("/")[2];
+    const user = data[id];
+    renderPage(res, "/edit/index.ejs", { user, id });
+  } else if (req.method === "POST" && req.url.startsWith("/edit/")) {
+    const id = req.url.split("/")[2];
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      const updatedUser = querystring.parse(body);
+      updatedUser.isMarried = updatedUser.isMarried === "true";
+      data[id] = updatedUser;
+      saveData(data);
+      res.writeHead(302, { Location: "/" });
+      res.end();
+    });
+  } else if (req.method === "GET" && req.url.startsWith("/delete/")) {
+    const id = req.url.split("/")[2];
+    data.splice(id, 1);
+    saveData(data);
+    res.writeHead(302, { Location: "/" });
+    res.end();
+  } else {
+    res.writeHead(404, { "Content-Type": "text/html" });
+    res.end("Page not found");
+  }
 });
 
-app.post("/edit/:id", (req, res) => {
-  const id = req.params.id;
-  const updatedUser = req.body;
-  updatedUser.isMarried = updatedUser.isMarried === "true";
-  data[id] = updatedUser;
-  saveData(data);
-  res.redirect("/");
-});
-
-app.get("/delete/:id", (req, res) => {
-  data.splice(req.params.id, 1);
-  saveData(data);
-  res.redirect("/");
-});
-
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
