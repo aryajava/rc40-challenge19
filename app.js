@@ -1,6 +1,6 @@
+import express from "express";
 import fs from "fs";
 import path from "path";
-import express from "express";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +29,7 @@ app.get("/add", (req, res) => {
 
 app.post("/add", (req, res) => {
   const newUser = req.body;
+  newUser.isMarried = newUser.isMarried === "true";
   data.push(newUser);
   saveData(data);
   res.redirect("/");
@@ -44,7 +45,9 @@ app.get("/edit/:id", (req, res) => {
 
 app.post("/edit/:id", (req, res) => {
   const id = req.params.id;
-  data[id] = req.body;
+  const updatedUser = req.body;
+  updatedUser.isMarried = updatedUser.isMarried === "true";
+  data[id] = updatedUser;
   saveData(data);
   res.redirect("/");
 });
@@ -58,4 +61,3 @@ app.get("/delete/:id", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
-

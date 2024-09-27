@@ -1,47 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CRUD (Create, Read, Update, Delete)</title>
-</head>
-<body>
-    <div class="">
-        <div class="">
-            <h1>CRUD (Create, Read, Update, Delete)</h1>
-        </div>
-        <div class="">
-            <a href="/add"><button>Create</button></a>
-        </div>
-        <div class="">
-            <table>
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Name</th>
-                        <th>Height</th>
-                        <th>Weight</th>
-                        <th>Birth Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% users.forEach((user, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td><%= user.name %></td>
-                            <td><%= user.height %></td>
-                            <td><%= user.weight %></td>
-                            <td><%= user.birthDate %></td>
-                            <td>
-                                <a href="/edit/<%= index %>"><button>Update</button></a>
-                                <a href="/delete/<%= index %>"><button>Delete</button></a>
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="">
+        <h1>JSON CRUD (Create, Read, Update, Delete)</h1>
+      </div>
+      <div class="">
+        <a href="/add"><button class="btn-blue">Create</button></a>
+      </div>
+      <div class="">
+        <table class="table-striped">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Name</th>
+              <th>Height</th>
+              <th>Weight</th>
+              <th>Birth Date</th>
+              <th>Is Merried</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach((user, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= user.name %></td>
+              <td><%= user.height %></td>
+              <td><%= user.weight %></td>
+              <td><%= user.birthDate %></td>
+              <td><%= user.isMarried ? 'Yes' : 'Not Yet' %></td>
+              <td>
+                <div class="btn-column">
+                  <a href="#" onclick="confirmDelete('<%= index %>', '<%= user.name %>')">Delete</a
+                  >&nbsp;
+                  <a href="/edit/<%= index %>">Update</a>
+                </div>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
     </div>
-</body>
+    <script>
+      function confirmDelete(index, name) {
+        if (confirm("Apakah kamu yakin menghapus data '" + name + "'?")) {
+          window.location.href = "/delete/" + index;
+        }
+      }
+    </script>
+  </body>
 </html>

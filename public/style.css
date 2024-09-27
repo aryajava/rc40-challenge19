@@ -1,35 +1,61 @@
 * {
-  background-color: rgb(231 247 255);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: rgb(231 247 255);
 }
 
 div {
   display: grid;
 }
 
-input {
+.container-fluid {
+  padding: 1.5em;
+}
+
+div.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1em;
+}
+
+input,
+select {
   padding: 1em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   width: auto;
   background-color: rgb(255, 255, 255);
-  border: 1px solid rgb(180, 180, 180);
+  border: 2px solid rgb(180, 180, 180);
   outline: none;
 }
 
-input[type="text"]:focus {
+input:focus {
   border: 2px solid rgb(47 135 239);
   border-radius: 5px;
+  outline: none;
 }
 
-input[type="text"]:focus::placeholder {
-  color: rgb(0, 0, 0);
-  font-weight: bold;
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 16px;
+}
+
+.table-striped>tbody>tr:nth-child(2n+2)>td,
+.table-striped>tbody>tr:nth-child(2n+2)>th {
+  background-color: rgb(255, 246, 236);
 }
 
 button {
@@ -39,6 +65,15 @@ button {
   width: 100%;
   border: 0;
   border-radius: 5px;
+}
+
+.btn-action {
+  padding: 0;
+  justify-content: space-between;
+}
+
+.btn-column {
+  display: inline-flex;
 }
 
 .btn-green {
@@ -57,4 +92,3 @@ button {
   padding-bottom: 0.5em;
   margin: 0.5em;
 }
-
