@@ -2,7 +2,7 @@
 
 > Challenge 19
 
-This CRUD project is a Express JS application.
+This CRUD project is Node JS application.
 
 ## Table of Contents
 
