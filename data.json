@@ -21,10 +21,17 @@
     "isMarried": false
   },
   {
-    "name": "dahaha",
+    "name": "Buas",
     "height": "166",
     "weight": "55.0",
     "birthDate": "2024-09-08",
+    "isMarried": true
+  },
+  {
+    "name": "Dul",
+    "height": "170",
+    "weight": "69.0",
+    "birthDate": "2024-10-01",
     "isMarried": false
   }
 ]

@@ -27,29 +27,32 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <% users.forEach((user, index) => { %>
-            <tr>
-              <td><%= index + 1 %></td>
-              <td><%= user.name %></td>
-              <td><%= user.height %></td>
-              <td><%= user.weight %></td>
-              <td><%= user.birthDate %></td>
-              <td><%= user.isMarried ? 'Yes' : 'Not Yet' %></td>
-              <td>
-                <div class="btn-column">
-                  <a href="#" onclick="confirmDelete('<%= index %>', '<%= user.name %>')">Delete</a
-                  >&nbsp;
-                  <a href="/edit/<%= index %>">Update</a>
-                </div>
-              </td>
-            </tr>
-            <% }); %>
-          </tbody>
+          <tbody id="userTableBody"></tbody>
         </table>
       </div>
     </div>
     <script>
+      const users = JSON.parse(`{{users}}`);
+      const userTableBody = document.getElementById("userTableBody");
+      users.forEach((user, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${user.name}</td>
+          <td>${user.height}</td>
+          <td>${user.weight}</td>
+          <td>${user.birthDate}</td>
+          <td>${user.isMarried ? "Yes" : "Not Yet"}</td>
+          <td>
+            <div class="btn-column">
+              <a href="#" onclick="confirmDelete('${index}', '${user.name}')">Delete</a>&nbsp;
+              <a href="/edit/${index}">Update</a>
+            </div>
+          </td>
+        `;
+        userTableBody.appendChild(row);
+      });
+
       function confirmDelete(index, name) {
         if (confirm("Apakah kamu yakin menghapus data '" + name + "'?")) {
           window.location.href = "/delete/" + index;

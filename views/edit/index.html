@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
-    <title>Add User</title>
+    <title>Update User</title>
   </head>
-
   <body>
     <div class="box">
       <form action="" method="POST">
@@ -26,7 +25,6 @@
           <input
             type="number"
             step="0.01"
-            value="0.00"
             id="weight"
             name="weight"
             required
@@ -34,7 +32,7 @@
           />
         </div>
         <div class="">
-          <input type="date" name="birthDate" id="birthDate" required value="" />
+          <input type="date" name="birthDate" id="birthDate" required />
         </div>
         <div class="">
           <select name="isMarried" id="isMarried" required>
@@ -44,7 +42,7 @@
           </select>
         </div>
         <div class="">
-          <button type="submit" class="btn-green">Save</button>
+          <button type="submit" class="btn-green">Update</button>
         </div>
       </form>
       <div class="">
@@ -54,11 +52,15 @@
       </div>
     </div>
     <script>
-      document.querySelector("#weight").addEventListener("change", function (e) {
+      const user = JSON.parse(`{{user}}`);
+      document.getElementById("name").value = user.name;
+      document.getElementById("height").value = user.height;
+      document.getElementById("weight").value = user.weight;
+      document.getElementById("birthDate").value = user.birthDate;
+      document.getElementById("isMarried").value = user.isMarried ? "true" : "false";
+      document.getElementById("weight").addEventListener("change", function (e) {
         e.currentTarget.value = parseFloat(e.currentTarget.value).toFixed(1);
       });
-      //   const boolIsMarried = document.querySelector("#isMarried").value;
-      //   boolIsMarried = boolIsMarried === "true" ? JSON.parse(true) : JSON.parse("false");
     </script>
   </body>
 </html>
