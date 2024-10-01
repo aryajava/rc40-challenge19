@@ -48,7 +48,7 @@
           <td>
             <div class="btn-column">
               <a href="#" onclick="confirmDelete('${index}', '${user.name}')">Delete</a>&nbsp;
-              <a href="/edit/${index}">Update</a>
+              <a href="/edit?id=${index}">Update</a>
             </div>
           </td>
         `;
@@ -57,7 +57,7 @@
 
     function confirmDelete(index, name) {
       if (confirm("Apakah kamu yakin menghapus data '" + name + "'?")) {
-        window.location.href = "/delete/" + index;
+        window.location.href = "/delete?id=" + index;
       }
     }
   </script>
