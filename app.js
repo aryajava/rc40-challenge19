@@ -10,7 +10,8 @@ const port = 3000;
 const dataFile = "data.json";
 
 const getData = () => JSON.parse(fs.readFileSync(dataFile, "utf8"));
-const saveData = (data) => fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+const saveData = (data) =>
+  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 
 const renderPage = (res, view, params = {}) => {
   const filePath = path.join(__dirname, "views", view);
@@ -137,3 +138,4 @@ const server = http.createServer((req, res) => {
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
+

@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CRUD (Create, Read, Update, Delete)</title>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="container-fluid">
-      <div class="">
-        <h1>JSON CRUD (Create, Read, Update, Delete)</h1>
-      </div>
-      <div class="">
-        <a href="/add"><button class="btn-blue">Create</button></a>
-      </div>
-      <div class="">
-        <table class="table-striped">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Name</th>
-              <th>Height</th>
-              <th>Weight</th>
-              <th>Birth Date</th>
-              <th>Is Merried</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody"></tbody>
-        </table>
-      </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRUD (Create, Read, Update, Delete)</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="">
+      <h1>JSON CRUD (Create, Read, Update, Delete)</h1>
     </div>
-    <script>
-      const users = JSON.parse(`{{users}}`);
-      const userTableBody = document.getElementById("userTableBody");
-      users.forEach((user, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+    <div class="">
+      <a href="/add"><button class="btn-blue">Create</button></a>
+    </div>
+    <div class="">
+      <table class="table-striped">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>Birth Date</th>
+            <th>Is Merried</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const users = JSON.parse(`{{users}}`);
+    const userTableBody = document.getElementById("userTableBody");
+    users.forEach((user, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
           <td>${index + 1}</td>
           <td>${user.name}</td>
           <td>${user.height}</td>
@@ -50,14 +52,15 @@
             </div>
           </td>
         `;
-        userTableBody.appendChild(row);
-      });
+      userTableBody.appendChild(row);
+    });
 
-      function confirmDelete(index, name) {
-        if (confirm("Apakah kamu yakin menghapus data '" + name + "'?")) {
-          window.location.href = "/delete/" + index;
-        }
+    function confirmDelete(index, name) {
+      if (confirm("Apakah kamu yakin menghapus data '" + name + "'?")) {
+        window.location.href = "/delete/" + index;
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
+
 </html>
