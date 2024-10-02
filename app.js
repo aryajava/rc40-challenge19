@@ -3,41 +3,91 @@ import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// Mendapatkan __dirname dan __filename
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const port = 3000;
 const dataFile = "data.json";
 
+// Membaca data dari file JSON
 const getData = () => JSON.parse(fs.readFileSync(dataFile, "utf8"));
-const saveData = (data) =>
-  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 
-// Render page
+// Menyimpan data ke file JSON
+const saveData = (data) => fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+// Merender halaman HTML dengan menggantikan placeholder menggunakan value dari params
 const renderPage = (res, view, params = {}) => {
   const filePath = path.join(__dirname, "views", view);
-  // Check apakah file ada
   fs.readFile(filePath, "utf8", (err, template) => {
     if (err) return renderError(res, "Error rendering page", 500);
 
-    const filledTemplate = replaceTemplateParams(template, params);
+    // Render user table dan form jika ada
+    if (params.users) params.userTable = renderUserTable(params.users);
+    params.form = renderForm(params.user);
+
+    // Mengganti placeholder dengan value dari params
+    const filledTemplate = template.replace(/{{(\w+)}}/g, (_, key) => params[key] || '');
+
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(filledTemplate);
   });
 };
 
-// Mengganti parameter template
-const replaceTemplateParams = (template, params) => {
-  return Object.keys(params).reduce((result, key) => {
-    const escapedValue = JSON.stringify(params[key]);
-    const regex = new RegExp(`{{${key}}}`, "g");
-    return result.replace(regex, escapedValue);
-  }, template);
-};
+// Merender tabel pengguna
+const renderUserTable = (users) => users.map((user, index) => `
+  <tr>
+    <td>${index + 1}</td>
+    <td>${user.name}</td>
+    <td>${user.height}</td>
+    <td>${user.weight}</td>
+    <td>${user.birthDate}</td>
+    <td>${user.isMarried ? "Yes" : "Not Yet"}</td>
+    <td>
+      <div class="btn-column">
+        <a href="/delete?id=${index}" onclick="return confirm('Apakah kamu yakin menghapus data \'${user.name}\'?')">Delete</a>&nbsp;
+        <a href="/edit?id=${index}">Update</a>
+      </div>
+    </td>
+  </tr>
+`).join('');
+
+// Merender form pengguna
+const renderForm = (user = {}) => `
+  <div class="box">
+    <form action="" method="POST">
+      <div class="">
+        <input type="text" id="name" name="name" required placeholder="insert your name" value="${user.name || ''}" />
+      </div>
+      <div class="">
+        <input type="number" id="height" name="height" required placeholder="insert your height" value="${user.height || ''}" />
+      </div>
+      <div class="">
+        <input type="number" step="0.01" id="weight" name="weight" required placeholder="insert your weight" value="${user.weight || '0.00'}" />
+      </div>
+      <div class="">
+        <input type="date" name="birthDate" id="birthDate" required value="${user.birthDate || ''}" />
+      </div>
+      <div class="">
+        <select name="isMarried" id="isMarried" required>
+          <option value="" style="display: none">have you married ?</option>
+          <option value="true" ${user.isMarried === true ? 'selected' : ''}>True</option>
+          <option value="false" ${user.isMarried === false ? 'selected' : ''}>False</option>
+        </select>
+      </div>
+      <div class="">
+        <button type="submit" class="btn-green">${user.name ? 'Update' : 'Save'}</button>
+      </div>
+    </form>
+    <div class="">
+      <a href="/">
+        <button class="btn-blue">Cancel</button>
+      </a>
+    </div>
+  </div>
+`;
 
 // Menghandle file static css
 const serveStaticFiles = (req, res) => {
   const filePath = path.join(__dirname, "public", req.url);
-  // Check apakah file ada
   fs.access(filePath, fs.constants.F_OK, (err) => {
     if (err) return renderError(res, "File not found", 404);
 
@@ -47,16 +97,13 @@ const serveStaticFiles = (req, res) => {
   });
 };
 
-// Mendapatkan content type
-const getContentType = (filePath) => {
-  const ext = path.extname(filePath);
-  return ext === ".css" ? "text/css" : "text/html";
-};
+// Mendapatkan content type berdasarkan ekstensi file
+const getContentType = (filePath) => path.extname(filePath) === ".css" ? "text/css" : "text/html";
 
 // Mem-parsing body dari request HTTP
 const parseRequestBody = (req, callback) => {
   let body = "";
-  req.on("data", (chunk) => (body += chunk.toString())); // chunk.toString() digunakan untuk mengubah buffer menjadi string
+  req.on("data", (chunk) => body += chunk.toString());
   req.on("end", () => {
     const params = new URLSearchParams(body);
     const parsedBody = {};
@@ -67,72 +114,57 @@ const parseRequestBody = (req, callback) => {
   });
 };
 
-// Rander error
+// Merender pesan error
 const renderError = (res, message, statusCode = 404) => {
   res.writeHead(statusCode, { "Content-Type": "text/html" });
   res.end(message);
 };
 
-// Mendapatkan id dari url
-const getIdFromUrl = (url) => {
-  const queryParams = new URLSearchParams(url.split("?")[1]);
-  return queryParams.get("id");
-};
+// Mendapatkan id dari URL
+const getIdFromUrl = (url) => new URLSearchParams(url.split("?")[1]).get("id");
 
-// Fungsi redirect
+// Melakukan redirect
 const redirect = (res, location) => {
-  res.writeHead(302, { Location: location }); // 302 adalah status code untuk redirect
+  res.writeHead(302, { Location: location });
   res.end();
 };
 
-// Handle method get
+// Menghandle request GET
 const handleGetRequest = (req, res) => {
   if (req.url.endsWith(".css")) return serveStaticFiles(req, res);
 
   const data = getData();
-
-  // Routing
-  if (req.url === "/") {
-    // Render index
-    return renderPage(res, "index.html", { users: data });
-  } else if (req.url === "/add") {
-    // Render add
-    return renderPage(res, "add/index.html");
-  } else if (req.url.startsWith("/edit")) {
-    // Render edit
+  // Menampilkan halaman beranda
+  if (req.url === "/") return renderPage(res, "index.html", { users: data });
+  // Menampilkan halaman tambah
+  if (req.url === "/add") return renderPage(res, "add/index.html");
+  // Menampilkan halaman edit
+  if (req.url.startsWith("/edit")) {
     const id = getIdFromUrl(req.url);
-    if (!id || !data[id]) {
-      return renderError(res, "User not found", 404);
-    }
-    const user = data[id];
-    return renderPage(res, "edit/index.html", { user, id });
-  } else if (req.url.startsWith("/delete")) {
-    // Delete
-    const id = getIdFromUrl(req.url);
-    if (!id || !data[id]) {
-      return renderError(res, "User not found", 404);
-    }
-    return handleDeleteRequest(req, res, data, id);
-  } else {
-    // Error
-    return renderError(res, "Page not found", 404);
+    if (!id || !data[id]) return renderError(res, "User not found", 404);
+    return renderPage(res, "edit/index.html", { user: data[id], id });
   }
-};
-
-// Handle method post
-const handlePostRequest = (req, res) => {
-  const data = getData();
-
-  // Routing
-  if (req.url === "/add") {
-    return handleAddUser(req, res, data);
-  } else if (req.url.startsWith("/edit")) {
-    return handleEditUser(req, res, data);
+  // Hapus
+  if (req.url.startsWith("/delete")) {
+    const id = getIdFromUrl(req.url);
+    if (!id || !data[id]) return renderError(res, "User not found", 404);
+    return handleDeleteRequest(req, res, data, id);
   }
   return renderError(res, "Page not found", 404);
 };
 
-// Add save
+// Menghandle request POST
+const handlePostRequest = (req, res) => {
+  const data = getData();
+
+  // Menambahkan
+  if (req.url === "/add") return handleAddUser(req, res, data);
+  // Mengedit
+  if (req.url.startsWith("/edit")) return handleEditUser(req, res, data);
+  return renderError(res, "Page not found", 404);
+};
+
+// Menambahkan pengguna baru
 const handleAddUser = (req, res, data) => {
   parseRequestBody(req, (newUser) => {
     newUser.isMarried = newUser.isMarried === "true";
@@ -142,7 +174,7 @@ const handleAddUser = (req, res, data) => {
   });
 };
 
-// Edit save
+// Mengedit pengguna yang ada
 const handleEditUser = (req, res, data) => {
   const id = getIdFromUrl(req.url);
   parseRequestBody(req, (updatedUser) => {
@@ -153,28 +185,22 @@ const handleEditUser = (req, res, data) => {
   });
 };
 
-// Delete
-const handleDeleteRequest = (req, res, data) => {
-  const id = getIdFromUrl(req.url);
+// Menghapus pengguna
+const handleDeleteRequest = (req, res, data, id) => {
   data.splice(id, 1);
   saveData(data);
   redirect(res, "/");
 };
 
-// Buat server
+// Membuat server HTTP
 const server = http.createServer((req, res) => {
-  // Routing berdasarkan method
-  if (req.method === "GET") {
-    handleGetRequest(req, res);
-  } else if (req.method === "POST") {
-    handlePostRequest(req, res);
-  } else {
-    renderError(res, "Method not allowed", 405);
-  }
+  if (req.method === "GET") return handleGetRequest(req, res);
+  if (req.method === "POST") return handlePostRequest(req, res);
+  return renderError(res, "Method not allowed", 405);
 });
 
-// Listen server
+// Menjalankan server
+const port = 3000;
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
-

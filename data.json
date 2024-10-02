@@ -1,17 +1,10 @@
 [
   {
-    "name": "Himawan",
-    "height": "168",
-    "weight": "80.52",
-    "birthDate": "1991-03-12",
-    "isMarried": false
-  },
-  {
     "name": "Rahmat",
-    "height": 171,
-    "weight": 57.699,
+    "height": "171",
+    "weight": "57.69",
     "birthDate": "1996-11-03",
-    "isMarried": true
+    "isMarried": false
   },
   {
     "name": "Buas",
@@ -26,5 +19,33 @@
     "weight": "69.0",
     "birthDate": "2024-10-01",
     "isMarried": false
+  },
+  {
+    "name": "hai",
+    "height": "155",
+    "weight": "55.00",
+    "birthDate": "2024-10-03",
+    "isMarried": false
+  },
+  {
+    "name": "yoo",
+    "height": "177",
+    "weight": "76.00",
+    "birthDate": "2024-10-02",
+    "isMarried": true
+  },
+  {
+    "name": "sok",
+    "height": "167",
+    "weight": "67.00",
+    "birthDate": "2024-10-02",
+    "isMarried": true
+  },
+  {
+    "name": "test",
+    "height": "170",
+    "weight": "85",
+    "birthDate": "2024-10-03",
+    "isMarried": true
   }
 ]

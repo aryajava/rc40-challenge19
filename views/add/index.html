@@ -9,43 +9,7 @@
 </head>
 
 <body>
-  <div class="box">
-    <form action="" method="POST">
-      <div class="">
-        <input type="text" id="name" name="name" required placeholder="insert your name" />
-      </div>
-      <div class="">
-        <input type="number" id="height" name="height" required placeholder="insert your height" />
-      </div>
-      <div class="">
-        <input type="number" step="0.01" value="0.00" id="weight" name="weight" required
-          placeholder="insert your weight" />
-      </div>
-      <div class="">
-        <input type="date" name="birthDate" id="birthDate" required value="" />
-      </div>
-      <div class="">
-        <select name="isMarried" id="isMarried" required>
-          <option value="" style="display: none">have you married ?</option>
-          <option value="true">True</option>
-          <option value="false">False</option>
-        </select>
-      </div>
-      <div class="">
-        <button type="submit" class="btn-green">Save</button>
-      </div>
-    </form>
-    <div class="">
-      <a href="/">
-        <button class="btn-blue">Cancel</button>
-      </a>
-    </div>
-  </div>
-  <script>
-    document.getElementById("weight").addEventListener("change", function (e) {
-      e.currentTarget.value = parseFloat(e.currentTarget.value).toFixed(2);
-    });
-  </script>
+  {{form}}
 </body>
 
 </html>

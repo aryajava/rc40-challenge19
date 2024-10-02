@@ -53,8 +53,8 @@ td {
   padding: 16px;
 }
 
-.table-striped>tbody>tr:nth-child(2n+2)>td,
-.table-striped>tbody>tr:nth-child(2n+2)>th {
+.table-striped>tbody>tr:nth-child(even)>td,
+.table-striped>tbody>tr:nth-child(even)>th {
   background-color: rgb(255, 246, 236);
 }
 
