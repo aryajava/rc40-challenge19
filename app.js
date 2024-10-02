@@ -32,7 +32,7 @@ const renderPage = (res, view, params = {}) => {
   });
 };
 
-// Merender tabel pengguna
+// Merender tabel
 const renderUserTable = (users) => users.map((user, index) => `
   <tr>
     <td>${index + 1}</td>
@@ -50,7 +50,7 @@ const renderUserTable = (users) => users.map((user, index) => `
   </tr>
 `).join('');
 
-// Merender form pengguna
+// Merender form
 const renderForm = (user = {}) => `
   <div class="box">
     <form action="" method="POST">
@@ -164,7 +164,7 @@ const handlePostRequest = (req, res) => {
   return renderError(res, "Page not found", 404);
 };
 
-// Menambahkan pengguna baru
+// Menambahkan baru
 const handleAddUser = (req, res, data) => {
   parseRequestBody(req, (newUser) => {
     newUser.isMarried = newUser.isMarried === "true";
@@ -174,7 +174,7 @@ const handleAddUser = (req, res, data) => {
   });
 };
 
-// Mengedit pengguna yang ada
+// Mengedit yang ada
 const handleEditUser = (req, res, data) => {
   const id = getIdFromUrl(req.url);
   parseRequestBody(req, (updatedUser) => {
@@ -185,7 +185,7 @@ const handleEditUser = (req, res, data) => {
   });
 };
 
-// Menghapus pengguna
+// Menghapus
 const handleDeleteRequest = (req, res, data, id) => {
   data.splice(id, 1);
   saveData(data);
