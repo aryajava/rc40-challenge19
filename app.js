@@ -164,7 +164,7 @@ const handlePostRequest = (req, res) => {
   return renderError(res, "Page not found", 404);
 };
 
-// Menambahkan baru
+// Menambahkan
 const handleAddUser = (req, res, data) => {
   parseRequestBody(req, (newUser) => {
     newUser.isMarried = newUser.isMarried === "true";
@@ -174,7 +174,7 @@ const handleAddUser = (req, res, data) => {
   });
 };
 
-// Mengedit yang ada
+// Mengedit
 const handleEditUser = (req, res, data) => {
   const id = getIdFromUrl(req.url);
   parseRequestBody(req, (updatedUser) => {
